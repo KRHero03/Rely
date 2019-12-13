@@ -25,6 +25,8 @@ dependencies:
   cloud_firestore: ^0.12.9+4
   #firebase_database: ^2.0.3
   flutter_launcher_icons: "^0.7.0"
+  material_design_icons_flutter: 3.4.4795
+  provider: ^3.1.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -46,6 +48,16 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  assets:
+    - assets/images/SignIn/background.png
+
+  fonts:
+    - family: Standard
+      fonts:
+        - asset: assets/fonts/Standard.ttf
+    - family: Handwritten
+      fonts:
+        - asset: assets/fonts/Handwritten.ttf
   
 
   # To add assets to your application, add an assets section, like this:
