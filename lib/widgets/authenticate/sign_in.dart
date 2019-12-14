@@ -1,20 +1,80 @@
+import 'package:Rely/widgets/authenticate/sign_up.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+class SignIn extends StatefulWidget {
+  _SignInState createState() => _SignInState();
+}
 
-class SignIn extends StatelessWidget {
+class _SignInState extends State<SignIn> {
+  bool _isPhoneSignIn = false;
+
+  void _onScreenChanged() {
+    setState(() {
+      _isPhoneSignIn = !_isPhoneSignIn;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    return SignInScreen(
+      state: _isPhoneSignIn,
+      toggler: _onScreenChanged,
+    );
+  }
+}
+
+class SignInScreen extends StatelessWidget {
+  final bool state;
+  final Function toggler;
+  SignInScreen({this.state, this.toggler});
+
+  void _toggleState() {
+    toggler();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    void _pushSignUp() {
+      print('tapped!');
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => SignUp()));
+    }
+
     return Stack(
       children: <Widget>[
         Container(
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage('assets/images/SignIn/background.png'),
-                  fit: BoxFit.fitWidth,
-                  alignment: Alignment.topCenter)),
-          alignment: Alignment.center,
-        ),
+            color: Color(0xff4564e5),
+            alignment: Alignment.center,
+            padding: EdgeInsets.only(top: 20),
+            child: Column(
+              children: <Widget>[
+                Image.asset(
+                  'assets/images/logo/round.png',
+                  width: 100,
+                  height: 100,
+                ),
+                Text('Rely',
+                    style: TextStyle(
+                      fontSize: 50,
+                      fontFamily: 'Standard',
+                      color: Color(0xfff3f5ff),
+                    )),
+                Text('We\'ll be there for you...',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'Handwritten',
+                      color: Color(0xfff3f5ff),
+                    )),
+                Text('One stop app for all your dairy products.',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontFamily: 'Standard',
+                      color: Color(0xfff3f5ff),
+                    )),
+              ],
+            )),
         Container(
           width: MediaQuery.of(context).size.width,
           margin: EdgeInsets.only(top: 270),
@@ -23,92 +83,224 @@ class SignIn extends StatelessWidget {
             color: Colors.white,
           ),
           child: Padding(
-            padding: EdgeInsets.all(23),
+            padding: EdgeInsets.only(left: 20, right: 20),
             child: ListView(
               children: <Widget>[
+                Text('Sign In to your Rely Account',
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontFamily: 'Standard',
+                      color: Color(0xff4564e5),
+                    ),
+                    textAlign: TextAlign.center),
                 Padding(
                   padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
                   child: Container(
                     color: Color(0xfff5f5f5),
-                    child: TextFormField(
-                      style: TextStyle(
-                          color: Colors.black, fontFamily: 'Standard'),
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Username',
-                          prefixIcon: Icon(Icons.person_outline),
-                          labelStyle: TextStyle(fontSize: 15)),
-                    ),
+                    child: state
+                        ? TextFormField(
+                            style: TextStyle(
+                                color: Colors.black, fontFamily: 'Standard'),
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Phone',
+                                prefixIcon: Icon(
+                                  MdiIcons.phone,
+                                  color: Color(0xff4564e5),
+                                ),
+                                labelStyle: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: 'Standard',
+                                  color: Color(0xff4564e5),
+                                )),
+                          )
+                        : TextFormField(
+                            style: TextStyle(
+                                color: Colors.black, fontFamily: 'Standard'),
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Email',
+                                prefixIcon: Icon(
+                                  MdiIcons.email,
+                                  color: Color(0xff4564e5),
+                                ),
+                                labelStyle: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: 'Standard',
+                                  color: Color(0xff4564e5),
+                                )),
+                          ),
                   ),
                 ),
                 Container(
-                  color: Color(0xfff5f5f5),
-                  child: TextFormField(
-                    obscureText: true,
-                    style:
-                        TextStyle(color: Colors.black, fontFamily: 'Standard'),
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock_outline),
-                        labelStyle: TextStyle(fontSize: 15)),
-                  ),
+                  color: Color(0xfff3f5ff),
+                  child: state
+                      ? null
+                      : TextFormField(
+                          obscureText: true,
+                          style: TextStyle(
+                              color: Colors.black, fontFamily: 'Standard'),
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              labelText: 'Password',
+                              prefixIcon: Icon(
+                                MdiIcons.lock,
+                                color: Color(0xff4564e5),
+                              ),
+                              labelStyle: TextStyle(
+                                fontSize: 15,
+                                fontFamily: 'Standard',
+                                color: Color(0xff4564e5),
+                              )),
+                        ),
                 ),
                 Padding(
                   padding: EdgeInsets.only(top: 20),
-                  child: MaterialButton(
-                    onPressed: () {}, //since this is only a UI app
+                  child: state
+                      ? MaterialButton(
+                          onPressed: () {}, //since this is only a UI app
+                          child: new Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                'SIGN IN WITH ',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: 'Standard',
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Icon(MdiIcons.phone),
+                            ],
+                          ),
+                          color: Color(0xff4edbf2),
+                          elevation: 0,
+                          minWidth: 400,
+                          height: 50,
+                          textColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        )
+                      : MaterialButton(
+                          onPressed: () {}, //since this is only a UI app
+                          child: Text(
+                            'SIGN IN',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontFamily: 'Standard',
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          color: Color(0xff4edbf2),
+                          elevation: 0,
+                          minWidth: 400,
+                          height: 50,
+                          textColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: state
+                      ? null
+                      : Text(
+                          'Forgot Your Password?',
+                        textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontFamily: 'Standard',
+                              color: Color(0xff4edbf2),
+                              fontSize: 15,
+                              decoration: TextDecoration.underline),
+                        ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(children: [
+                      TextSpan(
+                          text: "Don't have an account?",
+                          style: TextStyle(
+                            fontFamily: 'Standard',
+                            color: Color(0xff4564e5),
+                            fontSize: 15,
+                          )),
+                      TextSpan(
+                        text: "SIGN UP",
+                        recognizer: new TapGestureRecognizer()
+                          ..onTap = () => _pushSignUp,
+                        style: TextStyle(
+                            fontFamily: 'Standard',
+                            color: Color(0xff4edbf2),
+                            fontSize: 15,
+                            decoration: TextDecoration.underline),
+                      )
+                    ]),
+                  ),
+                ),
+                Padding(
+                    padding: EdgeInsets.only(top: 10),
                     child: Text(
-                      'SIGN IN',
+                      'OR',
                       style: TextStyle(
-                        fontSize: 15,
                         fontFamily: 'Standard',
-                        fontWeight: FontWeight.bold,
+                        color: Color(0xff4564e5),
+                        fontSize: 20,
                       ),
-                    ),
-                    color: Color(0xffff2d55),
-                    elevation: 0,
-                    minWidth: 400,
-                    height: 50,
-                    textColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
+                      textAlign: TextAlign.center,
+                    )),
                 Padding(
                   padding: EdgeInsets.only(top: 20),
-                  child: Center(
-                    child: Text(
-                      'Forgot your password?',
-                      style: TextStyle(
-                          fontFamily: 'Standard',
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 30),
-                  child: Center(
-                    child: RichText(
-                      text: TextSpan(children: [
-                        TextSpan(
-                            text: "Don't have an account?",
-                            style: TextStyle(
-                              fontFamily: 'Standard',
-                              color: Colors.black,
-                              fontSize: 15,
-                            )),
-                        TextSpan(
-                            text: "SIGN UP",
-                            style: TextStyle(
-                              fontFamily: 'Standard',
-                              color: Color(0xffff2d55),
-                              fontSize: 15,
-                            ))
-                      ]),
-                    ),
-                  ),
+                  child: state
+                      ? MaterialButton(
+                          onPressed: _toggleState,
+                          child: new Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                'SIGN IN WITH ',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: 'Standard',
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Icon(MdiIcons.email),
+                            ],
+                          ),
+                          color: Color(0xff4edbf2),
+                          elevation: 0,
+                          minWidth: 400,
+                          height: 50,
+                          textColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        )
+                      : MaterialButton(
+                          onPressed: _toggleState,
+                          child: new Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                'SIGN IN WITH ',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: 'Standard',
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Icon(MdiIcons.phone),
+                            ],
+                          ),
+                          color: Color(0xff4edbf2),
+                          elevation: 0,
+                          minWidth: 400,
+                          height: 50,
+                          textColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
                 ),
                 Padding(
                   padding: EdgeInsets.only(top: 20),

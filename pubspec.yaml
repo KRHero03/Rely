@@ -19,11 +19,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  #firebase_core: ^0.3.4
+  firebase_core: ^0.4.0
   #firebase_storage: ^2.1.1+2
   firebase_auth: ^0.14.0+5
-  cloud_firestore: ^0.12.9+4
-  #firebase_database: ^2.0.3
   flutter_launcher_icons: "^0.7.0"
   material_design_icons_flutter: 3.4.4795
   provider: ^3.1.0
@@ -50,7 +48,8 @@ flutter:
 
   assets:
     - assets/images/SignIn/background.png
-
+    - assets/images/logo/round.png
+    
   fonts:
     - family: Standard
       fonts:
@@ -94,7 +93,7 @@ flutter_icons:
   ios: true
   android: true
   #image_path: "assets/launcher/icon.png"
-  image_path_ios: "assets/launcher/icon.png"
-  image_path_android: "assets/launcher/icon.png"
-  adaptive_icon_background: "assets/launcher/background.png"
-  adaptive_icon_foreground: "assets/launcher/foreground.png"
+  image_path_ios: "assets/images/logo/icon.png"
+  image_path_android: "assets/images/logo/icon.png"
+  adaptive_icon_background: "assets/images/logo/background.png"
+  adaptive_icon_foreground: "assets/images/logo/foreground.png"

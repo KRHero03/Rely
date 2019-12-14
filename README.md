@@ -12,3 +12,7 @@ org.gradle.java.home=C:\\Program Files\\Java\\jdk1.8.0_151
 ## Commit 1
 Set up Sign In Screen.
 Included Material Design Icons package in app. (Check pubspec.yaml)
+
+## Commit 2
+Completed Sign In Screen UI.
+Starting with SignUp Screen and Integrating with Firebase Auth and Firebase Database.
