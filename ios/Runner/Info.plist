@@ -39,7 +39,13 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+  <string>Rely needs your location to verify the Delivery address.</string>
+  <key>NSPhotoLibraryUsageDescription</key>
+  <string>Rely needs to access your Photo Library so that you can load your personalised Profile Picture.</string>
+  <key>NSCameraUsageDescription</key>
+  <string>Rely needs to access your Camera so that your can load your personalised Profile Picture.</string>
+  <key>io.flutter.embedded_views_preview</key>
+  <true/>
 </dict>
 </plist>

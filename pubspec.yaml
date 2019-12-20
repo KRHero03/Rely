@@ -13,22 +13,44 @@ description: We'll be there for you...
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 version: 1.0.0+1
 
+
+
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+
   firebase_core: ^0.4.0
-  #firebase_storage: ^2.1.1+2
   firebase_auth: ^0.14.0+5
+  firebase_messaging: ^5.0.2
+  firebase_database: 3.0.6
+  
+  google_sign_in: ^3.2.4
+
+  flutter_facebook_login: ^1.2.0
+
+  http: ^0.12.0+2 
   flutter_launcher_icons: "^0.7.0"
   material_design_icons_flutter: 3.4.4795
-  provider: ^3.1.0
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
+  shared_preferences: ^0.5.4+8
+  intro_slider: ^1.0.8
+  flutter_country_picker: ^0.1.6
+  fluttertoast: ^3.1.3
   cupertino_icons: ^0.1.2
+  
+  
+  
+  provider: ^3.1.0
+  google_maps_flutter: ^0.5.21+13
+  geolocator: ^5.1.5  
+  stack_trace: ^1.9.3  
+  android_intent: ^0.3.4+7
+
+
+  image_picker_modern: ^0.4.12
+
 
 dev_dependencies:
   flutter_test:
@@ -47,8 +69,12 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/SignIn/background.png
     - assets/images/logo/round.png
+    - assets/images/SignIn/background.png
+    - assets/images/Intro/Slide1.png
+    - assets/images/Intro/Slide2.png
+    - assets/images/Intro/Slide3.png
+    - assets/images/ProfilePicture/default.png
     
   fonts:
     - family: Standard

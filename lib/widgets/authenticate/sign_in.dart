@@ -1,6 +1,12 @@
-import 'package:Rely/widgets/authenticate/sign_up.dart';
-import 'package:flutter/gestures.dart';
+import 'dart:io';
+
+import 'package:Rely/models/user.dart';
+import 'package:Rely/services/auth.dart';
+import 'package:Rely/widgets/alert/alert_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_country_picker/flutter_country_picker.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class SignIn extends StatefulWidget {
@@ -8,40 +14,21 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  bool _isPhoneSignIn = false;
-
-  void _onScreenChanged() {
-    setState(() {
-      _isPhoneSignIn = !_isPhoneSignIn;
-    });
+  String phoneNumber = "";
+  bool _buttonPressed = false;
+  final AuthService _auth = AuthService();
+  String verificationID;
+  final phoneController = TextEditingController();
+  Country _selected = Country.IN;
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    phoneController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SignInScreen(
-      state: _isPhoneSignIn,
-      toggler: _onScreenChanged,
-    );
-  }
-}
-
-class SignInScreen extends StatelessWidget {
-  final bool state;
-  final Function toggler;
-  SignInScreen({this.state, this.toggler});
-
-  void _toggleState() {
-    toggler();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    void _pushSignUp() {
-      print('tapped!');
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => SignUp()));
-    }
-
     return Stack(
       children: <Widget>[
         Container(
@@ -79,28 +66,75 @@ class SignInScreen extends StatelessWidget {
           width: MediaQuery.of(context).size.width,
           margin: EdgeInsets.only(top: 270),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Colors.white,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+            color: Color(0xfff3f5ff),
           ),
           child: Padding(
             padding: EdgeInsets.only(left: 20, right: 20),
             child: ListView(
               children: <Widget>[
-                Text('Sign In to your Rely Account',
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontFamily: 'Standard',
-                      color: Color(0xff4564e5),
-                    ),
-                    textAlign: TextAlign.center),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
-                  child: Container(
-                    color: Color(0xfff5f5f5),
-                    child: state
-                        ? TextFormField(
-                            style: TextStyle(
-                                color: Colors.black, fontFamily: 'Standard'),
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text('Let\'s get Started...',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontFamily: 'Standard',
+                        color: Color(0xff4564e5),
+                      ),
+                      textAlign: TextAlign.center),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text('First of all, tell us your Phone number!',
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontFamily: 'Standard',
+                        color: Color(0xff4564e5),
+                      ),
+                      textAlign: TextAlign.left),
+                ),
+                Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.only(top: 10, bottom: 10),
+                          margin: EdgeInsets.only(top: 5, bottom: 5),
+                          alignment: Alignment.center,
+                          width: 150,
+                          decoration: BoxDecoration(
+                            border:
+                                Border.all(width: 1, color: Color(0xff4564e5)),
+                          ),
+                          child: CountryPicker(
+                            dense: false,
+                            showFlag: true,
+                            showDialingCode: true,
+                            showName: true,
+                            showCurrency: false,
+                            showCurrencyISO: false,
+                            dialingCodeTextStyle: TextStyle(
+                              fontSize: 15,
+                              fontFamily: 'Standard',
+                              color: Color(0xff4564e5),
+                            ),
+                            nameTextStyle: TextStyle(
+                              fontSize: 15,
+                              fontFamily: 'Standard',
+                              color: Color(0xff4564e5),
+                            ),
+                            onChanged: (Country country) {
+                              setState(() {
+                                _selected = country;
+                              });
+                            },
+                            selectedCountry: _selected,
+                          ),
+                        ),
+                        TextField(
+                            controller: phoneController,
+                            keyboardType: TextInputType.number,
                             decoration: InputDecoration(
                                 border: OutlineInputBorder(),
                                 labelText: 'Phone',
@@ -112,255 +146,169 @@ class SignInScreen extends StatelessWidget {
                                   fontSize: 15,
                                   fontFamily: 'Standard',
                                   color: Color(0xff4564e5),
-                                )),
-                          )
-                        : TextFormField(
-                            style: TextStyle(
-                                color: Colors.black, fontFamily: 'Standard'),
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: 'Email',
-                                prefixIcon: Icon(
-                                  MdiIcons.email,
-                                  color: Color(0xff4564e5),
-                                ),
-                                labelStyle: TextStyle(
-                                  fontSize: 15,
-                                  fontFamily: 'Standard',
-                                  color: Color(0xff4564e5),
-                                )),
-                          ),
-                  ),
-                ),
-                Container(
-                  color: Color(0xfff3f5ff),
-                  child: state
-                      ? null
-                      : TextFormField(
-                          obscureText: true,
-                          style: TextStyle(
-                              color: Colors.black, fontFamily: 'Standard'),
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Password',
-                              prefixIcon: Icon(
-                                MdiIcons.lock,
-                                color: Color(0xff4564e5),
-                              ),
-                              labelStyle: TextStyle(
-                                fontSize: 15,
-                                fontFamily: 'Standard',
-                                color: Color(0xff4564e5),
-                              )),
-                        ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: state
-                      ? MaterialButton(
-                          onPressed: () {}, //since this is only a UI app
-                          child: new Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                'SIGN IN WITH ',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontFamily: 'Standard',
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Icon(MdiIcons.phone),
-                            ],
-                          ),
-                          color: Color(0xff4edbf2),
-                          elevation: 0,
-                          minWidth: 400,
-                          height: 50,
-                          textColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                        )
-                      : MaterialButton(
-                          onPressed: () {}, //since this is only a UI app
-                          child: Text(
-                            'SIGN IN',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontFamily: 'Standard',
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          color: Color(0xff4edbf2),
-                          elevation: 0,
-                          minWidth: 400,
-                          height: 50,
-                          textColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                        ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: state
-                      ? null
-                      : Text(
-                          'Forgot Your Password?',
-                        textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontFamily: 'Standard',
-                              color: Color(0xff4edbf2),
-                              fontSize: 15,
-                              decoration: TextDecoration.underline),
-                        ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(children: [
-                      TextSpan(
-                          text: "Don't have an account?",
-                          style: TextStyle(
-                            fontFamily: 'Standard',
-                            color: Color(0xff4564e5),
-                            fontSize: 15,
-                          )),
-                      TextSpan(
-                        text: "SIGN UP",
-                        recognizer: new TapGestureRecognizer()
-                          ..onTap = () => _pushSignUp,
-                        style: TextStyle(
-                            fontFamily: 'Standard',
-                            color: Color(0xff4edbf2),
-                            fontSize: 15,
-                            decoration: TextDecoration.underline),
-                      )
-                    ]),
-                  ),
-                ),
-                Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Text(
-                      'OR',
-                      style: TextStyle(
-                        fontFamily: 'Standard',
-                        color: Color(0xff4564e5),
-                        fontSize: 20,
-                      ),
-                      textAlign: TextAlign.center,
+                                )))
+                      ],
                     )),
                 Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: state
-                      ? MaterialButton(
-                          onPressed: _toggleState,
-                          child: new Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                'SIGN IN WITH ',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontFamily: 'Standard',
-                                  fontWeight: FontWeight.bold,
+                    padding: EdgeInsets.only(top: 20),
+                    child: MaterialButton(
+                      onPressed: _buttonPressed
+                          ? null
+                          : _signInWithPhone, //since this is only a UI app
+                      child: _buttonPressed
+                          ? new Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  'SIGNING IN...',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontFamily: 'Standard',
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xff4564e5),
+                                  ),
                                 ),
-                              ),
-                              Icon(MdiIcons.email),
-                            ],
-                          ),
-                          color: Color(0xff4edbf2),
-                          elevation: 0,
-                          minWidth: 400,
-                          height: 50,
-                          textColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                        )
-                      : MaterialButton(
-                          onPressed: _toggleState,
-                          child: new Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Text(
-                                'SIGN IN WITH ',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontFamily: 'Standard',
-                                  fontWeight: FontWeight.bold,
+                                Padding(
+                                  padding: EdgeInsets.only(left: 20),
                                 ),
-                              ),
-                              Icon(MdiIcons.phone),
-                            ],
-                          ),
-                          color: Color(0xff4edbf2),
-                          elevation: 0,
-                          minWidth: 400,
-                          height: 50,
-                          textColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                        ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: MaterialButton(
-                    onPressed: () {}, //since this is only a UI app
-                    child: new Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          'SIGN IN WITH ',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontFamily: 'Standard',
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Icon(MdiIcons.facebookBox),
-                      ],
-                    ),
-                    color: Color(0xff3b5998),
-                    elevation: 0,
-                    minWidth: 400,
-                    height: 50,
-                    textColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: MaterialButton(
-                    onPressed: () {}, //since this is only a UI app
-                    child: new Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          'SIGN IN WITH ',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontFamily: 'Standard',
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Icon(MdiIcons.google),
-                      ],
-                    ),
-                    color: Color(0xff4285F4),
-                    elevation: 0,
-                    minWidth: 400,
-                    height: 50,
-                    textColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
+                                CircularProgressIndicator(),
+                              ],
+                            )
+                          : new Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  'SIGN IN WITH ',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontFamily: 'Standard',
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Icon(MdiIcons.phone),
+                              ],
+                            ),
+
+                      color: Color(0xff4edbf2),
+                      elevation: 0,
+                      minWidth: 400,
+                      height: 50,
+                      textColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    )),
               ],
             ),
           ),
         )
       ],
     );
+  }
+
+  _signInWithPhone() async {
+    phoneNumber = '+' + _selected.dialingCode + phoneController.text;
+    if (phoneNumber.length != 13) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => new Scaffold(
+                  backgroundColor: Color(0x30000000),
+                  body: CustomAlertDialog(
+                    title: 'Rely - Phone Sign In',
+                    message:
+                        ' Your Phone Sign In has failed! Please ensure you have entered correct Phone Number!',
+                  ))));
+    } else {
+      setState(() {
+        _buttonPressed = true;
+      });
+      try {
+        final result = await InternetAddress.lookup('google.com');
+        if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+          User userModel;
+          final PhoneCodeAutoRetrievalTimeout autoRetrieve = (String verId) {
+            print("Phone Code Auto Retrieval Timeout");
+            verificationID = verId;
+
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => new Scaffold(
+                        backgroundColor: Color(0x30000000),
+                        body: CustomAlertDialog(
+                          title: 'Rely - Phone Sign In',
+                          message:
+                              ' Your Phone Sign In has failed! Please ensure you have entered correct Phone Number!',
+                        ))));
+            setState(() {
+              _buttonPressed = false;
+            });
+          };
+
+          final PhoneCodeSent smsCodeSent =
+              (String verId, [int forceCodeResend]) {
+            print("Code Sent");
+            verificationID = verId;
+          };
+
+          final PhoneVerificationCompleted verifiedSuccess =
+              (AuthCredential phoneAuthCredential) async {
+            FirebaseUser user =
+                await _auth.signInWithPhoneCredential(phoneAuthCredential);
+
+            userModel.uid = user.uid;
+            Fluttertoast.showToast(
+                msg: "You have successfully signed in!",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.BOTTOM,
+                timeInSecForIos: 2,
+                backgroundColor: Color(0xfff3f5ff),
+                textColor: Color(0xff4564e5),
+                fontSize: 16.0);
+            setState(() {
+              _buttonPressed = false;
+            });
+          };
+
+          final PhoneVerificationFailed veriFailed = (AuthException exception) {
+            print("Failed");
+            print('${exception.message}');
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => new Scaffold(
+                        backgroundColor: Color(0x30000000),
+                        body: CustomAlertDialog(
+                          title: 'Rely - Phone Sign In',
+                          message: ' Your Phone Sign In has failed! Try again!',
+                        ))));
+            setState(() {
+              _buttonPressed = false;
+            });
+          };
+          await FirebaseAuth.instance.verifyPhoneNumber(
+              phoneNumber: phoneNumber,
+              codeAutoRetrievalTimeout: autoRetrieve,
+              codeSent: smsCodeSent,
+              timeout: const Duration(seconds: 40),
+              verificationCompleted: verifiedSuccess,
+              verificationFailed: veriFailed);
+        }
+      } on SocketException catch (_) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => new Scaffold(
+                    backgroundColor: Color(0x30000000),
+                    body: CustomAlertDialog(
+                      title: 'Rely - Phone Sign In',
+                      message:
+                          ' Your Phone Sign In has failed! Please ensure Stable Internet Connection!',
+                    ))));
+        setState(() {
+          _buttonPressed = true;
+        });
+      }
+    }
   }
 }

@@ -16,3 +16,7 @@ Included Material Design Icons package in app. (Check pubspec.yaml)
 ## Commit 2
 Completed Sign In Screen UI.
 Starting with SignUp Screen and Integrating with Firebase Auth and Firebase Database.
+
+## Commit 3
+Completed Basic Details UI.
+Next task:- Starting with Home Screen
