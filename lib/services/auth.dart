@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:Rely/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -14,38 +13,33 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   //Create User object from FirebaseUser object
-  User _getUser(FirebaseUser user) {
+  FirebaseUser _getUser(FirebaseUser user) {
     return user == null
         ? null
-        : User(
-            uid: user
-                .uid); //Function is used to instantiate User object from FirebaseUser instance.
+        : user; //Function is used to instantiate User object from FirebaseUser instance.
   }
 
   //When Authentication is Done, Stream is used to notify wrapper.
-  Stream<User> get user {
+  Stream<FirebaseUser> get user {
     return _auth.onAuthStateChanged.map(
         _getUser); //Maps FirebaseUser Instance to custom User instance using _getUser function.
     //It is the same process as Pipelining. The Auth instance provides a FirebaseUser Object
     //that is passed into _getUser which returns User object.
   }
 
-  Future<User> signInWithEmailAndPassword(String email, String password) async {
+  Future<FirebaseUser> signInWithEmailAndPassword(String email, String password) async {
     try {
       AuthResult result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       FirebaseUser user = result.user;
-      User userModel = _getUser(user);
-      userModel.email = user.email;
-
-      return userModel;
+      return user;
     } catch (error) {
       print(error.toString());
       return null;
     }
   }
 
-  Future<User> signInWithGoogle() async {
+  Future<FirebaseUser> signInWithGoogle() async {
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn();
       final GoogleSignInAccount googleSignInAccount =
@@ -61,16 +55,14 @@ class AuthService {
       final AuthResult result = await _auth.signInWithCredential(credential);
 
       FirebaseUser user = result.user;
-      User userModel = _getUser(user);
-      userModel.email = user.email;
-      return userModel;
+      return user;
     } catch (error) {
       print(error.toString());
       return null;
     }
   }
 
-  Future<User> signInWithFacebook() async {
+  Future<FirebaseUser> signInWithFacebook() async {
     try {
       final facebookLogin = new FacebookLogin();
       final facebookLoginResult = await facebookLogin
@@ -95,15 +87,11 @@ class AuthService {
             final AuthResult result =
                 await _auth.signInWithCredential(credential);
             FirebaseUser user = result.user;
-            User userModel = _getUser(user);
-            userModel.email = profile['email'];
-            userModel.username = profile['name'];
-            userModel.online = '1';
+            return user;
           } else {
             return null;
           }
 
-          return null;
       }
 
       return null;

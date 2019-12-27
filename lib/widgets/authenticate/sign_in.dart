@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:Rely/models/user.dart';
 import 'package:Rely/services/auth.dart';
 import 'package:Rely/widgets/alert/alert_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -225,7 +224,6 @@ class _SignInState extends State<SignIn> {
       try {
         final result = await InternetAddress.lookup('google.com');
         if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-          User userModel;
           final PhoneCodeAutoRetrievalTimeout autoRetrieve = (String verId) {
             print("Phone Code Auto Retrieval Timeout");
             verificationID = verId;
@@ -255,8 +253,7 @@ class _SignInState extends State<SignIn> {
               (AuthCredential phoneAuthCredential) async {
             FirebaseUser user =
                 await _auth.signInWithPhoneCredential(phoneAuthCredential);
-
-            userModel.uid = user.uid;
+            
             Fluttertoast.showToast(
                 msg: "You have successfully signed in!",
                 toastLength: Toast.LENGTH_SHORT,

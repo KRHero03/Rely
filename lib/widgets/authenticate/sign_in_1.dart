@@ -1,7 +1,8 @@
-import 'package:Rely/models/user.dart';
+
 import 'package:Rely/services/auth.dart';
 import 'package:Rely/widgets/alert/alert_dialog.dart';
 import 'package:Rely/widgets/authenticate/sign_up.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -24,7 +25,7 @@ class _SignInState extends State<SignIn> {
   }
 
   _signInWithEmailandPassword() async {
-    User result = await _auth.signInWithEmailAndPassword(email, password);    
+    FirebaseUser result = await _auth.signInWithEmailAndPassword(email, password);    
     if (result == null) {
       return showDialog(
           context: context,
@@ -40,7 +41,7 @@ class _SignInState extends State<SignIn> {
   }
 
   _signInWithGoogle() async {
-    User result = await _auth.signInWithGoogle();    
+    FirebaseUser result = await _auth.signInWithGoogle();    
     print(result.email);
     if (result == null) {
       return showDialog(
@@ -56,7 +57,7 @@ class _SignInState extends State<SignIn> {
   }
 
   _signInWithFacebook() async {
-    User result = await _auth.signInWithFacebook();
+    FirebaseUser result = await _auth.signInWithFacebook();
     if (result == null) {
       return showDialog(
           context: context,

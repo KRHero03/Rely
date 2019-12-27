@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:Rely/models/enum.dart';
 import 'package:Rely/models/location_result.dart';
 import 'package:Rely/services/email_validator.dart';
@@ -7,10 +6,17 @@ import 'package:Rely/services/keys.dart';
 import 'package:Rely/services/name_validator.dart';
 import 'package:Rely/widgets/alert/alert_dialog.dart';
 import 'package:Rely/widgets/alert/confirm_dialog.dart';
+import 'package:Rely/widgets/circular_image_view.dart';
 import 'package:Rely/widgets/location_picker/location_picker.dart';
+import 'package:device_id/device_id.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_modern/image_picker_modern.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:provider/provider.dart';
 
 class BasicDetails extends StatefulWidget {
   @override
@@ -23,14 +29,15 @@ class BasicDetailsState extends State<BasicDetails> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final addressController = TextEditingController();
-  File imageFile = null;
 
   LocationResult result;
 
-  var screenChanged = false;
+  var screenChanged = false, loading = false;
 
-  String name, email, address = '';
-  double latitude = null, longitude = null;
+  String name, email, address, imageFileURL;
+  double latitude, longitude;
+  File imageFile;
+  String deviceId;
 
   void dispose() {
     nameController.dispose();
@@ -94,19 +101,130 @@ class BasicDetailsState extends State<BasicDetails> {
                   backgroundColor: Color(0x30000000),
                   body: CustomConfirmDialog(
                     title: 'Rely - Confirm Profile Picture',
-                    message:
-                        'Nice Profile Picture there... Shall we proceed to the Home Screen then?',
+                    message: imageFile == null
+                        ? 'Nevermind with the Profile Picture. Shall we proceed to the Home Screen?'
+                        : 'Nice Profile Picture there... Shall we proceed to the Home Screen then?',
                   ))));
-      print(result);
-      if (result == ConfirmAction.YES) {}
+      if (result == ConfirmAction.YES) {
+        setState(() {
+          loading = true;
+        });
+        deviceId = await DeviceId.getID;
+        FirebaseUser userInstance = Provider.of<FirebaseUser>(context);
+        try {
+          if (imageFile != null) {
+            final StorageReference storageReference = FirebaseStorage()
+                .ref()
+                .child('Users')
+                .child(userInstance.uid)
+                .child('ProfilePicture');
+            StorageUploadTask uploadTask = storageReference.putFile(imageFile);
+            await uploadTask.onComplete;
+            await storageReference.getDownloadURL().then((fileURL) {
+              imageFileURL = fileURL;
+            });
+          } else {
+            imageFileURL = 'default';
+          }
+          print('ImageFileURL Line 126:- ' + imageFileURL);
+
+          userInstance.updateEmail(email).then((value) {
+            userInstance.sendEmailVerification();
+          }).whenComplete(() {
+            FirebaseDatabase.instance
+                .reference()
+                .child('Users')
+                .child(userInstance.uid)
+                .set({
+              'Name': name,
+              'Email': email,
+              'Phone': userInstance.phoneNumber,
+              'Address': {
+                'Primary': {
+                  'Value': address,
+                  'Latitude': latitude,
+                  'Longitude': longitude
+                }
+              },
+              'DeviceID': deviceId,
+              'ProfilePicture': imageFileURL,
+            }).whenComplete(() {
+              setState(() {
+                loading = false;
+              });
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => new Scaffold(
+                          backgroundColor: Color(0x30000000),
+                          body: CustomAlertDialog(
+                            title: 'Rely - Home',
+                            message:
+                                'Welcome to Rely!\nWe have sent a Verification mail to your email address.\nPlease verify your email address first!',
+                          ))));
+            }).catchError((onError) {
+              setState(() {
+                loading = false;
+              });
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => new Scaffold(
+                          backgroundColor: Color(0x30000000),
+                          body: CustomAlertDialog(
+                            title: 'Rely - Basic Details',
+                            message:
+                                'Failed to upload details! Please try again after some time.',
+                          ))));
+            });
+          }).catchError((onError) {
+            setState(() {
+              loading = false;
+            });
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => new Scaffold(
+                        backgroundColor: Color(0x30000000),
+                        body: CustomAlertDialog(
+                          title: 'Rely - Basic Details',
+                          message:
+                              'Failed to upload details! Please try again after some time.',
+                        ))));
+          });
+        } catch (error) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => new Scaffold(
+                      backgroundColor: Color(0x30000000),
+                      body: CustomAlertDialog(
+                        title: 'Rely - Basic Details',
+                        message:
+                            'Failed to upload details! Please try again after some time.',
+                      ))));
+        }
+      }
     }
   }
 
-  _pickImage() async {
-    File imageTemp = null;
-
+  Future _pickImage() async {
+    File imageTemp;
+    File croppedImage;
     try {
       imageTemp = await ImagePicker.pickImage(source: ImageSource.gallery);
+      croppedImage = await ImageCropper.cropImage(
+        sourcePath: imageTemp.path,
+        cropStyle: CropStyle.circle,
+        aspectRatioPresets: [CropAspectRatioPreset.square],
+        androidUiSettings: AndroidUiSettings(
+            statusBarColor: Color(0xff4564e5),
+            toolbarTitle: 'Rely - Choose Image',
+            toolbarWidgetColor: Color(0xffff3f5ff),
+            activeWidgetColor: Color(0xff4edbf2),
+            toolbarColor: Color(0xff4564e5),
+            activeControlsWidgetColor: Color(0xff4edbf2)),
+      );
     } catch (e) {
       Navigator.push(
           context,
@@ -123,7 +241,7 @@ class BasicDetailsState extends State<BasicDetails> {
     if (!mounted) return;
 
     setState(() {
-      imageFile = imageTemp;
+      imageFile = croppedImage;
     });
   }
 
@@ -223,20 +341,22 @@ class BasicDetailsState extends State<BasicDetails> {
                       ? Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                              Container(
-                                alignment: Alignment.center,
-                                width: 250.0,
-                                height: 250.0,
-                                child: imageFile != null
-                                    ? imageFile
-                                    : Image.asset(
-                                        'assets/images/ProfilePicture/default.png'),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
+                              imageFile != null
+                                  ? CircularImageView(
+                                      w: 250.0,
+                                      h: 250.0,
+                                      imageLink: imageFile,
+                                      imgSrc: ImageSourceENUM.File,
+                                    )
+                                  : CircularImageView(
+                                      w: 250.0,
+                                      h: 250.0,
+                                      imageLink:
+                                          'assets/images/ProfilePicture/default.png',
+                                      imgSrc: ImageSourceENUM.Asset,
+                                    ),
                               Padding(
-                                  padding: EdgeInsets.all(0),
+                                  padding: EdgeInsets.all(10),
                                   child: FloatingActionButton(
                                       elevation: 0,
                                       onPressed: _pickImage,
@@ -276,7 +396,9 @@ class BasicDetailsState extends State<BasicDetails> {
                         ),
                 ),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  padding: screenChanged
+                      ? EdgeInsets.all(0)
+                      : EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: screenChanged
                       ? null
                       : Container(
@@ -302,7 +424,9 @@ class BasicDetailsState extends State<BasicDetails> {
                         ),
                 ),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  padding: screenChanged
+                      ? EdgeInsets.all(0)
+                      : EdgeInsets.fromLTRB(0, 10, 0, 10),
                   child: screenChanged
                       ? null
                       : Container(
@@ -347,7 +471,9 @@ class BasicDetailsState extends State<BasicDetails> {
                         ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: 5),
+                  padding: screenChanged
+                      ? EdgeInsets.all(0)
+                      : EdgeInsets.only(top: 5),
                   child: screenChanged
                       ? null
                       : Text(
@@ -360,23 +486,35 @@ class BasicDetailsState extends State<BasicDetails> {
                           textAlign: TextAlign.left),
                 ),
                 Padding(
-                    padding: EdgeInsets.only(top: 20, bottom: 20),
+                    padding: EdgeInsets.only(top: 10, bottom: 20),
                     child: MaterialButton(
-                      onPressed: _goToLastStep,
+                      onPressed: loading ? null : _goToLastStep,
                       child: screenChanged
                           ? new Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  'TAKE ME HOME',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontFamily: 'Standard',
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Icon(MdiIcons.chevronRight),
-                              ],
+                              children: loading
+                                  ? <Widget>[
+                                      Text(
+                                        'TAKING YOU HOME...',
+                                        style: TextStyle(
+                                            fontSize: 15,
+                                            fontFamily: 'Standard',
+                                            fontWeight: FontWeight.bold,
+                                            color: Color(0xff4564e5)),
+                                      ),
+                                      CircularProgressIndicator()
+                                    ]
+                                  : <Widget>[
+                                      Text(
+                                        'TAKE ME HOME',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          fontFamily: 'Standard',
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Icon(MdiIcons.chevronRight),
+                                    ],
                             )
                           : new Row(
                               mainAxisAlignment: MainAxisAlignment.center,
