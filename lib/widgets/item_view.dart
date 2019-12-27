@@ -22,9 +22,13 @@ class ItemViewState extends State<ItemView> {
   ItemViewState({this.item});
 
   bool isPrimary = false;
-  String dateType = 'Discrete';
 
+  String dateType = 'Discrete';
+  String startingDateTimeStamp;
   int selectedQuantity = 1;
+  String isOnTheGo = 'False';
+
+  String startingDate;
 
   @override
   Widget build(BuildContext context) {
@@ -219,7 +223,7 @@ class ItemViewState extends State<ItemView> {
       return Container(
           color: Color(0xfff3f5ff),
           alignment: Alignment.center,
-          child: Column(
+          child: ListView(
             children: <Widget>[
               Padding(
                   padding:
@@ -262,7 +266,10 @@ class ItemViewState extends State<ItemView> {
                       return new DropdownMenuItem<String>(
                         value: value.toString(),
                         child: new Text(
-                          value.toString() + ' ' + item.packagingType,
+                          value.toString() +
+                              ' ' +
+                              item.packagingType +
+                              ((value <= 1) ? '' : '(s)'),
                           style: TextStyle(
                             color: Color(0xff4564e5),
                             fontFamily: 'Standard',
@@ -348,22 +355,112 @@ class ItemViewState extends State<ItemView> {
                               ),
                               textAlign: TextAlign.center,
                             )),
-                      Padding(
-                          padding: EdgeInsets.only(left: 5),
-                          child: Icon(MdiIcons.frequentlyAskedQuestions,
-                              color: Color(0xff4564e5), size: 30))
                     ],
                   )),
               Padding(
+                padding: EdgeInsets.only(top: 10, left: 5, right: 5, bottom: 5),
+                child: dateType == 'Discrete'
+                    ? null
+                    : GestureDetector(
+                        onTap: () async {
+                          DateTime result = await showDatePicker(
+                            context: context,
+                            firstDate: DateTime.now().add(Duration(days: 1)),
+                            initialDate: DateTime.now().add(Duration(days: 1)),
+                            lastDate: DateTime.now().add(Duration(days: 365)),
+                          );
+                          setState(() {
+                            startingDate = result == null
+                                ? null
+                                : result.day.toString() +
+                                    " - " +
+                                    result.month.toString() +
+                                    " - " +
+                                    result.year.toString();
+                            startingDateTimeStamp = result == null
+                                ? null
+                                : result.millisecondsSinceEpoch.toString();
+                          });
+                        },
+                        child: Center(
+                          child: Container(
+                            width: MediaQuery.of(context).size.width,
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.only(top: 5, bottom: 5),
+                            decoration: BoxDecoration(
+                              color: Color(0xff4564e5),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              startingDate == null
+                                  ? 'Pick a Date'
+                                  : startingDate,
+                              style: TextStyle(
+                                  color: Color(0xfff3f5ff),
+                                  fontFamily: 'Standard',
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )),
+              ),
+              Padding(
                   padding:
-                      EdgeInsets.only(top: 10, left: 5, right: 5, bottom: 5),
-                  child: dateType == 'Discrete'
-                      ? null
-                      : CupertinoDatePicker(
-                          onDateTimeChanged: (DateTime value) {
-                            print(value);
-                          },
-                        ))
+                      EdgeInsets.only(top: 10, bottom: 5, left: 5, right: 5),
+                  child: Text(
+                    'Is this Subscription On The Go?',
+                    style: TextStyle(
+                      color: Color(0xff4564e5),
+                      fontFamily: 'Standard',
+                      fontSize: 25,
+                    ),
+                    textAlign: TextAlign.center,
+                  )),
+              Padding(
+                  padding:
+                      EdgeInsets.only(top: 10, bottom: 5, left: 10, right: 10),
+                  child: new DropdownButton<String>(
+                    icon: Icon(MdiIcons.chevronDown,
+                        color: Color(0xff4564e5), size: 34),
+                    isExpanded: true,
+                    value: isOnTheGo,
+                    style: TextStyle(
+                      color: Color(0xff4564e5),
+                      fontFamily: 'Standard',
+                      fontSize: 20,
+                    ),
+                    items: <String>['False', 'True'].map((String value) {
+                      return new DropdownMenuItem<String>(
+                        value: value.toString(),
+                        child: new Text(
+                          value.toString(),
+                          style: TextStyle(
+                            color: Color(0xff4564e5),
+                            fontFamily: 'Standard',
+                            fontSize: 20,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (val) {
+                      setState(() {
+                        isOnTheGo = val;
+                      });
+                    },
+                  )),
+                  Padding(padding: EdgeInsets.only(top: 10, bottom: 5, left: 5, right: 5),
+                    child: isOnTheGo=='False'?null:ListView(
+                      shrinkWrap: true,
+                      children: <Widget>[
+                        /*TODO ADD INPUT WIDGETS FOR USER SO THAT HE CAN INSERT PNR NO., 
+                        TRAIN NAME, PREFERRED ORDER PICK UP STATION. THE INFO MUST BE VALIDATED
+                        AND ONLY THOSE STATIONS MUST BE DISPLAYED IN PREFERRED ORDER PICK UP STATION
+                        THAT ARE REACHED BY TRAIN, AND ALSO AFTER THE STATION WHERE USER TAKES THE TRAIN AND BEFORE 
+                        THE STATION WHERE USER LEAVES THE TRAIN.
+                        */
+                      ],
+                    )
+                  )
             ],
           ));
     }
