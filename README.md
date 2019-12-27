@@ -20,3 +20,7 @@ Starting with SignUp Screen and Integrating with Firebase Auth and Firebase Data
 ## Commit 3
 Completed Basic Details UI.
 Next task:- Starting with Home Screen
+
+## Commit 4
+Completed Home Screen.
+Next task:- Completing Subscription Screen
