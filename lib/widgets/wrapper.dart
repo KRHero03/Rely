@@ -19,6 +19,7 @@ class WrapperState extends State<Wrapper> {
   @override
   Widget build(BuildContext context) {
     FirebaseUser user = Provider.of<FirebaseUser>(context);
+  
     if (user == null)
       return Authenticate();
     else {

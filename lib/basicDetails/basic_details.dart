@@ -160,7 +160,7 @@ class BasicDetailsState extends State<BasicDetails> {
                           body: CustomAlertDialog(
                             title: 'Rely - Home',
                             message:
-                                'Welcome to Rely!\nWe have sent a Verification mail to your email address.\nPlease verify your email address first!',
+                                'Welcome to Rely!\nWe have sent a Verification mail to your email address.\nPlease verify your email address first!\nAlso, please refer the FAQ Section under Accounts Tab!',
                           ))));
             }).catchError((onError) {
               setState(() {

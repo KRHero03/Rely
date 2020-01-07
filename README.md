@@ -24,3 +24,7 @@ Next task:- Starting with Home Screen
 ## Commit 4
 Completed Home Screen.
 Next task:- Completing Subscription Screen
+
+## Commit 5
+Completed Adding Subscription Screen.
+Next task:- Completing Subscription/Modify Subscription Screen.

@@ -57,6 +57,13 @@ dependencies:
 
   device_id: ^0.2.0
 
+
+  upi_india: 1.1.1
+
+
+  calendarro: ^1.1.2
+  true_time: ^0.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -81,6 +88,9 @@ flutter:
     - assets/images/Intro/Slide3.png
     - assets/images/ProfilePicture/default.png
     - assets/images/Splashscreen/Splashscreen.png
+    - assets/images/Payment/GooglePay.png
+    - assets/images/Payment/PhonePe.png
+    - assets/images/Payment/BHIM.png
     
   fonts:
     - family: Standard

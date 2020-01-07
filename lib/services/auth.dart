@@ -11,7 +11,6 @@ class AuthService {
 
   String verificationIdS;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
   //Create User object from FirebaseUser object
   FirebaseUser _getUser(FirebaseUser user) {
     return user == null
@@ -26,6 +25,7 @@ class AuthService {
     //It is the same process as Pipelining. The Auth instance provides a FirebaseUser Object
     //that is passed into _getUser which returns User object.
   }
+
 
   Future<FirebaseUser> signInWithEmailAndPassword(String email, String password) async {
     try {

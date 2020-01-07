@@ -10,7 +10,7 @@ class CustomAlertDialog extends StatelessWidget {
         backgroundColor: Color(0xfff3f5ff),
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(20.0))),
-        title: new Row(
+        title:new Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Image.asset(
@@ -18,15 +18,18 @@ class CustomAlertDialog extends StatelessWidget {
               width: 50,
               height: 50,
             ),
-            Text(
+            Flexible(
+              
+              child:Text(
               this.title,
               style: TextStyle(
                 fontSize: 25,
                 fontFamily: 'Standard',
                 color: Color(0xff4564e5),
               ),
-              textAlign: TextAlign.center,
+              textAlign: TextAlign.left,
             ),
+            )
           ],
         ),
         content: Column(
