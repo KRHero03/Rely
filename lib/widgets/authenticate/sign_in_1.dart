@@ -1,6 +1,7 @@
 
 import 'package:Rely/services/auth.dart';
 import 'package:Rely/widgets/alert/alert_dialog.dart';
+import 'package:Rely/widgets/authenticate/sign_up.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -73,10 +74,10 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     void _pushSignUp() {
-     /* Navigator.pushReplacement(
+      Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) => new Scaffold(body: SignUp())));*/
+              builder: (context) => new Scaffold(body: SignUp())));
     }
 
     return Stack(

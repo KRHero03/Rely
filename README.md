@@ -27,8 +27,4 @@ Next task:- Completing Subscription Screen
 
 ## Commit 5
 Completed Adding Subscription Screen.
-Next task:- Completing Account Screen.*
-
-## Commit 6
-Completed Account Screen (Still left for Update Email to work)
 Next task:- Completing Subscription/Modify Subscription Screen.

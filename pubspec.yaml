@@ -64,9 +64,6 @@ dependencies:
   calendarro: ^1.1.2
   true_time: ^0.1.0
 
-  url_launcher: 5.2.5
-  flutter_advanced_networkimage: 0.5.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

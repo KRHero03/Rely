@@ -1,12 +1,11 @@
-
-import 'package:Rely/widgets/home.dart';
+import 'package:Rely/basicDetails/basic_details.dart';
 import 'package:Rely/widgets/splashscreen/splashscreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:Rely/widgets/home/home.dart';
 import 'package:Rely/widgets/authenticate/authenticate.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'basic_details/basic_details.dart';
 
 class Wrapper extends StatefulWidget {
   @override
@@ -17,15 +16,10 @@ class Wrapper extends StatefulWidget {
 
 class WrapperState extends State<Wrapper> {
   bool exists;
-  bool reloaded = false;
   @override
   Widget build(BuildContext context) {
     FirebaseUser user = Provider.of<FirebaseUser>(context);
-    if (reloaded == false) {
-      if(user!=null)
-        user.reload();
-      reloaded = true;
-    }
+  
     if (user == null)
       return Authenticate();
     else {
@@ -45,13 +39,13 @@ class WrapperState extends State<Wrapper> {
           }
         });
       }
-      if (exists == null) {
+      if (exists == null)
         return Splashscreen();
-      } else {
-        if (exists == true) {
-          return Home();
-        } else {
+      else {
+        if (!exists) {
           return BasicDetails();
+        } else {
+          return Home();
         }
       }
     }

@@ -1,6 +1,5 @@
 import 'package:Rely/models/enum.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_advanced_networkimage/provider.dart';
 
 class CircularImageView extends StatelessWidget {
   final double h, w;
@@ -15,20 +14,17 @@ class CircularImageView extends StatelessWidget {
       alignment: Alignment.center,
       width: w,
       height: h,
+      
       decoration: BoxDecoration(
         image: DecorationImage(
           image: imgSrc == ImageSourceENUM.Asset
               ? AssetImage(imageLink.toString())
               : (imgSrc == ImageSourceENUM.Network
-                  ? AdvancedNetworkImage(imageLink,
-                          useDiskCache: true,
-                          cacheRule:
-                              CacheRule(maxAge: const Duration(days: 30)))
-                      : FileImage(imageLink)),
+                  ? NetworkImage(imageLink.toString())
+                  : FileImage(imageLink)),
         ),
         shape: BoxShape.circle,
-      ),
-      duration: Duration(milliseconds: 500),
+      ), duration: Duration(milliseconds: 500),
     );
   }
 }
