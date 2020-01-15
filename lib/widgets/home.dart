@@ -1,11 +1,9 @@
 import 'package:Rely/models/enum.dart';
+import 'package:Rely/widgets/account/account.dart';
 import 'package:Rely/widgets/circular_image_view.dart';
 import 'package:Rely/widgets/home/home_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -17,7 +15,6 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> {
   int _tabSelectedIndex = 0;
 
-  var profilePictureLink;
   @override
   void initState() {
     super.initState();
@@ -25,21 +22,8 @@ class HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    FirebaseUser user = Provider.of<FirebaseUser>(context);
 
-    FirebaseDatabase.instance
-        .reference()
-        .child('Users')
-        .child(user.uid)
-        .child('ProfilePicture')
-        .once()
-        .then((DataSnapshot snapshot) {
-      if (snapshot.value != null) {
-        setState(() {
-          profilePictureLink = snapshot.value.toString();
-        });
-      }
-    });
+   
     double _lastFeedScrollOffset = 0;
     ScrollController _scrollController;
 
@@ -132,6 +116,10 @@ class HomeState extends State<Home> {
           _scrollController =
               ScrollController(initialScrollOffset: _lastFeedScrollOffset);
           return HomePage(scrollController: _scrollController);
+          case 2:
+          _scrollController =
+              ScrollController(initialScrollOffset: _lastFeedScrollOffset);
+          return Account(scrollController: _scrollController);
         default:
           
           _disposeScrollController();
@@ -145,20 +133,13 @@ class HomeState extends State<Home> {
         elevation: 1.0,
         title: new Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            profilePictureLink == null
-                ? CircularImageView(
+          children: <Widget>[CircularImageView(
                     w: 50,
                     h: 50,
                     imageLink: 'assets/images/logo/round.png',
                     imgSrc: ImageSourceENUM.Asset,
-                  )
-                : CircularImageView(
-                    w: 50,
-                    h: 50,
-                    imageLink: profilePictureLink,
-                    imgSrc: ImageSourceENUM.Network,
                   ),
+                
             Padding(
               padding: EdgeInsets.only(left: 5),
               child: Text(

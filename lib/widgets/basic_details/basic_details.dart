@@ -212,19 +212,141 @@ class BasicDetailsState extends State<BasicDetails> {
     File imageTemp;
     File croppedImage;
     try {
-      imageTemp = await ImagePicker.pickImage(source: ImageSource.gallery);
-      croppedImage = await ImageCropper.cropImage(
-        sourcePath: imageTemp.path,
-        cropStyle: CropStyle.circle,
-        aspectRatioPresets: [CropAspectRatioPreset.square],
-        androidUiSettings: AndroidUiSettings(
-            statusBarColor: Color(0xff4564e5),
-            toolbarTitle: 'Rely - Choose Image',
-            toolbarWidgetColor: Color(0xffff3f5ff),
-            activeWidgetColor: Color(0xff4edbf2),
-            toolbarColor: Color(0xff4564e5),
-            activeControlsWidgetColor: Color(0xff4edbf2)),
-      );
+      final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => new Scaffold(
+                  backgroundColor: Color(0x30000000),
+                  body: AlertDialog(
+                      backgroundColor: Color(0xfff3f5ff),
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(20.0))),
+                      title: new Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Image.asset(
+                            'assets/images/logo/round.png',
+                            width: 50,
+                            height: 50,
+                          ),
+                          Flexible(
+                            child: Text(
+                              'Rely - Profile Picture',
+                              style: TextStyle(
+                                fontSize: 25,
+                                fontFamily: 'Standard',
+                                color: Color(0xff4564e5),
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          )
+                        ],
+                      ),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Text(
+                                'Choose your Profile Picture Source.',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: 'Standard',
+                                  color: Color(0xff4564e5),
+                                ),
+                                textAlign: TextAlign.center,
+                              )),
+                          new Row(
+                            children: <Widget>[
+                              Flexible(
+                                child: Padding(
+                                    padding: EdgeInsets.only(
+                                        top: 20, left: 5, right: 5),
+                                    child: MaterialButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(ImageSource.gallery);
+                                      },
+                                      child: Row(
+                                        
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          
+                                          Icon(MdiIcons.imageFrame),
+                                          Text(
+                                            'GALLERY',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              fontFamily: 'Standard',
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      color: Color(0xff4edbf2),
+                                      elevation: 0,
+                                      minWidth: 400,
+                                      height: 50,
+                                      textColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                    )),
+                              ),
+                              Flexible(
+                                child: Padding(
+                                    padding: EdgeInsets.only(
+                                        top: 20, left: 5, right: 5),
+                                    child: MaterialButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(ImageSource.camera);
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Icon(MdiIcons.camera),
+                                          Text(
+                                            'CAMERA',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                              fontFamily: 'Standard',
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      color: Color(0xff4edbf2),
+                                      elevation: 0,
+                                      minWidth: 400,
+                                      height: 50,
+                                      textColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                    )),
+                              )
+                            ],
+                          )
+                        ],
+                      )))));
+      
+      if (result != null) {
+        imageTemp = await ImagePicker.pickImage(source: result);
+        croppedImage = await ImageCropper.cropImage(
+          sourcePath: imageTemp.path,
+          cropStyle: CropStyle.circle,
+          aspectRatioPresets: [CropAspectRatioPreset.square],
+          androidUiSettings: AndroidUiSettings(
+              statusBarColor: Color(0xff4564e5),
+              toolbarTitle: 'Rely - Choose Image',
+              toolbarWidgetColor: Color(0xffff3f5ff),
+              activeWidgetColor: Color(0xff4edbf2),
+              toolbarColor: Color(0xff4564e5),
+              activeControlsWidgetColor: Color(0xff4edbf2)),
+        );
+      }
     } catch (e) {
       Navigator.push(
           context,
@@ -384,7 +506,7 @@ class BasicDetailsState extends State<BasicDetails> {
                                 border: OutlineInputBorder(),
                                 labelText: 'Name',
                                 prefixIcon: Icon(
-                                  MdiIcons.account,
+                                  MdiIcons.accountCircle,
                                   color: Color(0xff4564e5),
                                 ),
                                 labelStyle: TextStyle(

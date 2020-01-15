@@ -30,10 +30,8 @@ class ItemViewState extends State<ItemView> {
   final notesController = TextEditingController();
 
   FirebaseUser userInstance;
-  bool _initialized = false;
-
-  bool isPrimary = false;
   bool isTransaction = false;
+
   DateTime curDate = DateTime.now();
   String dateType = 'Discrete';
   String startingDateTimeStamp = 'NA';
@@ -481,14 +479,13 @@ class ItemViewState extends State<ItemView> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Text(
-                              'ADD TO ',
+                              'SUBSCRIBE TO PRODUCT',
                               style: TextStyle(
                                 fontSize: 15,
                                 fontFamily: 'Standard',
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Icon(MdiIcons.cart),
                           ],
                         ),
                         color: Color(0xff4edbf2),
@@ -507,7 +504,36 @@ class ItemViewState extends State<ItemView> {
   }
 
   Widget buildBodySecondary() {
-    return Container(
+    return Scaffold(
+      appBar: AppBar(
+          iconTheme: IconThemeData(color: Color(0xff4564e5)),
+          backgroundColor: Color(0xfff3f5ff),
+          elevation: 1.0,
+          title: new Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              CircularImageView(
+                w: 50,
+                h: 50,
+                imageLink: 'assets/images/logo/round.png',
+                imgSrc: ImageSourceENUM.Asset,
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 5),
+                child: Text(
+                  'Rely - Subscription',
+                  style: TextStyle(
+                    fontSize: 25,
+                    fontFamily: 'Standard',
+                    color: Color(0xff4564e5),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              )
+            ],
+          ),
+        ),
+      body:Container(
         color: Color(0xfff3f5ff),
         alignment: Alignment.center,
         child: ListView(
@@ -1090,7 +1116,7 @@ class ItemViewState extends State<ItemView> {
                                 borderRadius: BorderRadius.circular(10)),
                           )))
           ],
-        ));
+        )));
   }
 
   _addToCart() {
@@ -1106,7 +1132,10 @@ class ItemViewState extends State<ItemView> {
                         'Please verify your email before adding any Product to cart!\nCheck Accounts Tab.',
                   ))));
     } else {
-      isPrimary = false;
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => buildBodySecondary()));
     }
   }
 
@@ -1133,6 +1162,18 @@ class ItemViewState extends State<ItemView> {
           }
         });
       });
+    }).catchError((onError) {
+      Navigator.pop(context);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => new Scaffold(
+                  backgroundColor: Color(0x30000000),
+                  body: CustomAlertDialog(
+                    title: 'Rely - Subscription',
+                    message:
+                        'Oops..Rely failed to load Subscription Customisation!\nPlease make sure you are connected to internet!',
+                  ))));
     });
   }
 
@@ -1141,7 +1182,7 @@ class ItemViewState extends State<ItemView> {
     userInstance = Provider.of<FirebaseUser>(context);
 
     return Scaffold(
-      body: isPrimary ? buildBodyPrimary() : buildBodySecondary(),
+      body: buildBodyPrimary() ,
       floatingActionButton: FloatingActionButton(
         onPressed: _displayInfo,
         child: Icon(MdiIcons.helpCircleOutline, size: 40, color: Colors.white),
