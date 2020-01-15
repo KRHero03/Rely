@@ -20,6 +20,7 @@ class AuthService {
 
   //When Authentication is Done, Stream is used to notify wrapper.
   Stream<FirebaseUser> get user {
+    
     return _auth.onAuthStateChanged.map(
         _getUser); //Maps FirebaseUser Instance to custom User instance using _getUser function.
     //It is the same process as Pipelining. The Auth instance provides a FirebaseUser Object
