@@ -1,0 +1,3 @@
+Primary:- #4564e5
+Secondary:- #f3f5ff
+Accent:- #4edbf2
